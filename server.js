@@ -1,8 +1,12 @@
 import cors from "cors"
 import express from "express"
+import mongoose from "mongoose"
 import data from "./data.json" with { type: "json" }
 import listEndpoints from "express-list-endpoints";
 
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/thoughts-api"
+mongoose.connect(mongoUrl)
+mongoose.Promise = Promise
 
 const port = process.env.PORT || 9000
 const app = express()
