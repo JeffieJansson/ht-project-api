@@ -3,6 +3,9 @@ import express from "express"
 import mongoose from "mongoose"
 import data from "./data.json" with { type: "json" }
 import listEndpoints from "express-list-endpoints";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/thoughts-api"
 mongoose.connect(mongoUrl)
