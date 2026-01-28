@@ -3,8 +3,12 @@ import express, { response } from "express"
 import mongoose from "mongoose"
 import listEndpoints from "express-list-endpoints";
 import dotenv from "dotenv";
+import thoughtJson from "./data.json" with { type: "json" };
 
 dotenv.config();
+
+// hacky way to load data.json
+let thoughtData = thoughtJson;
 
 const mongoUrl = process.env.MONGO_URL //mongodb://localhost:27017/thoughtsdb
 mongoose.connect(mongoUrl)
@@ -44,10 +48,11 @@ if (process.env.RESET_DB) {
   const seedDatabase = async () => {
     await Thought.deleteMany();
 
-    thoughtData.forEach(thought => {
-      new Thought(thought).save();
-  });
-}
+    // Remove _id from each thought to let MongoDB generate new ones
+    const thoughtsToSeed = thoughtData.map(({ _id, __v, ...thought }) => thought);
+    
+    await Thought.insertMany(thoughtsToSeed);
+  }
   seedDatabase();
 }
 
@@ -101,9 +106,17 @@ app.get("/thoughts", async (req, res) => {
 
 // One endpoint to return a single result  (GET thoughts by id)
 app.get("/thoughts/:id", async (req, res) => {
-  const { id } = req.params
+  const id = req.params.id 
   try {
-    const thought = await Thought.findById(Number(id));
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json ({
+        success: false,
+        response: null,
+        message: "Invalid ID format"
+      });
+    }
+
+    const thought = await Thought.findById(id);
 
 
     if (!thought) {
@@ -111,9 +124,15 @@ app.get("/thoughts/:id", async (req, res) => {
       return res.status(404).json ({
         success: false,
         response: [],
-        message: `Thought with id ${id} not found`
+        message: `Thought not found`
       })
     }
+
+        return res.status(200).json ({
+      success: true,
+      response: thought,
+      message: "Success"
+    })
 
   } catch (error) {
     return res.status(500).json ({
@@ -125,6 +144,33 @@ app.get("/thoughts/:id", async (req, res) => {
   }
 
 })
+
+//create new thought and save() it to the database (POST)
+app.post("/thoughts", async (req, res) => {
+  const body = req.body;
+
+  try {
+    const newThought = {
+      message: body.message,
+    };
+
+    const createdThought = await new Thought(newThought).save()
+
+    return res.status(201).json ({
+      success: true,
+      response: createdThought,
+      message: "Thought created successfully"
+    })
+
+  } catch (error) {
+    return res.status(500).json ({
+      success: false,
+      response: null,
+      message: error,
+    })
+  }
+});
+
 
 // Start the server
 app.listen(port, () => {
