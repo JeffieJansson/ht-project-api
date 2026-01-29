@@ -171,6 +171,127 @@ app.post("/thoughts", async (req, res) => {
   }
 });
 
+//TODO delete a thought by id (DELETE)
+app.delete("/thoughts/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json ({
+        success: false,
+        response: null,
+        message: "Invalid ID format"
+      });
+    }
+    const deletedThought = await Thought.findByIdAndDelete(id);
+
+    if (!deletedThought) {
+      return res.status(404).json({
+        success: false,
+        response: null,
+        message: "Thought not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      response: deletedThought,
+      message: "Thought deleted successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      response: null,
+      message: error.message
+    });
+  }
+})
+
+// Like a thought by id (PATCH)
+app.patch("/thoughts/:id/like", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json ({
+        success: false,
+        response: null,
+        message: "Invalid ID format"
+      });
+    }
+
+    const updatedThought = await Thought.findByIdAndUpdate(
+      id,
+      { $inc: { hearts: 1 } },
+      { new: true }
+    );
+
+    if (!updatedThought) {
+      return res.status(404).json({
+        success: false,
+        response: null,
+        message: "Thought not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      response: updatedThought,
+      message: "Thought liked successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      response: null,
+      message: error,
+    });
+  }
+})
+
+// Update a thought by id (PATCH)
+app.patch("/thoughts/:id", async (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        response: null,
+        message: "Invalid ID format"
+      });
+    }
+
+    const updatedThought = await Thought.findByIdAndUpdate(
+      id,
+      { message: body.message },
+      { new: true }
+    );
+
+    if (!updatedThought) {
+      return res.status(404).json({
+        success: false,
+        response: null,
+        message: "Thought not found"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      response: updatedThought,
+      message: "Thought updated successfully"
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      response: null,
+      message: error.message
+    });
+  }
+})
 
 // Start the server
 app.listen(port, () => {
