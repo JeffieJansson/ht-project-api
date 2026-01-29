@@ -7,10 +7,10 @@ import thoughtJson from "./data.json" with { type: "json" };
 
 dotenv.config();
 
-// hacky way to load data.json
+// Load initial data for seeding (only used if RESET_DB is true)
 let thoughtData = thoughtJson;
 
-const mongoUrl = process.env.MONGO_URL //mongodb://localhost:27017/thoughtsdb
+const mongoUrl = process.env.MONGO_URL
 mongoose.connect(mongoUrl)
 mongoose.Promise = Promise
 
@@ -49,6 +49,7 @@ if (process.env.RESET_DB) {
     await Thought.deleteMany();
 
     // Remove _id from each thought to let MongoDB generate new ones
+    // other way to do it is to use thoughtData = thoughtData.map(thought => { delete thought._id; return thought; });
     const thoughtsToSeed = thoughtData.map(({ _id, __v, ...thought }) => thought);
     
     await Thought.insertMany(thoughtsToSeed);
