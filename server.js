@@ -44,7 +44,7 @@ const ThoughtSchema = new mongoose.Schema({
 const Thought = mongoose.model("Thought", ThoughtSchema);
 
 // Add seeding of db
-if (process.env.RESET_DB) {
+if (process.env.RESET_DB === "true") {
   const seedDatabase = async () => {
     await Thought.deleteMany();
 
