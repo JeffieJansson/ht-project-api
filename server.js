@@ -71,29 +71,26 @@ app.get("/", (req, res) => {
 // One endpoint to return a collection of results(GET all thoughts)
 app.get("/thoughts", async (req, res) => {
   const { hearts } = req.query;
-
   const query = {}
 
   if (hearts) {
-      query.hearts = { $gte: Number(hearts) } //$gte -  MongoDB operator for "greater than or equal to"
+    query.hearts = { $gte: Number(hearts) }
   }
 
   try {
-    const filteredThoughts = await Thought.find(query)
+    const filteredThoughts = await Thought.find(query).sort({ createdAt: -1 });
     if (filteredThoughts.length === 0) {
-
-    return res.status(404).json({
-      success: false,
-      response: [],
-      message: "No thoughts found for that query"
-    });
-  }
+      return res.status(404).json({
+        success: false,
+        response: [],
+        message: "No thoughts found for that query"
+      });
+    }
     return res.status(200).json({
       success: true,
       response: filteredThoughts,
       message: "Thoughts retrieved successfully"
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
