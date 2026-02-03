@@ -3,23 +3,27 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 
 const router = express.Router();
-    // TODO create a salt and hash the password with bcrypt
-    // TODO check if user exists
-    // TODO create user and save to db
-    // TODO return success message
 
 //endpoint is /user/signup
 // Here we can create a new user
 router.post("/signup", async (req, res) => {
   try {
     const { email, password } = req.body;
+
+      if (!password || password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required. Password must be at least 6 characters.",
+      });
+    }
+
     
     const existingUser = await User.findOne({ email: email.toLowerCase() });
      
     if (existingUser) {
       return  res.status(400).json({
         success: false,
-        message: "An error occurred when creating the user",
+        message: "User with this email already exists",
       });
     }
 
