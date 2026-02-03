@@ -5,6 +5,7 @@ import listEndpoints from "express-list-endpoints";
 import dotenv from "dotenv";
 import thoughtJson from "./data.json" with { type: "json" };
 import Thought from "./models/Thought.js";
+
 import thoughtRoutes from "./routes/thoughtRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
@@ -44,7 +45,6 @@ if (process.env.RESET_DB === "true") {
 // documentation of the API with express-list-endpoints
 app.get("/", (req, res) => {
   const endpoints = listEndpoints(app);
-  console.log("mongo:", process.env.MONGO_URL);
   res.json([{
     message: "Welcome to the Thoughts API",
     endpoints: endpoints

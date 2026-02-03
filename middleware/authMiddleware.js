@@ -2,23 +2,18 @@ import User from "../models/User.js";
 
 const authenticateUser = async (req, res, next) => {
   try {
-    
-    // TODO check if user is authenticated
-    // TODO if not, return 401
-    // TODO if yes, continue to next middleware
     const user = await User.findOne({
       accessToken: req.header("Authorization").replace("Bearer ", ""),
     });
-
-    if (!user) {
+    if (user) {
       req.user = user;
       next();
     } else {
-      res.status(401).json({ 
-        message: "Unauthorized" 
+      res.status(401).json({
+        message: "Authentication missing or invalid.",
+        loggedOut: true,
       });
     }
-
   } catch (err) {
     res
       .status(500)

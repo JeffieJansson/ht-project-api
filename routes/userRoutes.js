@@ -29,7 +29,7 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
   
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User created successfully", 
       response: {
@@ -52,29 +52,28 @@ router.post("/signup", async (req, res) => {
 // Here we can verify email and password and return accessToken
 router.post("/login", async (req, res) => {
   try {
-  const user = await User.findOne({ email: req.body.email });
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email: email.toLowerCase() });
   
-  if (user && bcrypt.compareSync(req.body.password, user.password)) {
-    res.json({ userId: user._id, accessToken: user.accessToken });
-    res.json ({
-      success: true,
-      message: "Login successful",
-      response: {
-        email: user.email,
-        id: user._id,
-        accessToken: user.accessToken,
-      }
-    })
-
-  } else {
-    res.status(401).json({
-      success: false,
-      message: "Invalid email or password",
-      response: null,
-    });
-  }
-
- } catch (error) {
+    if (user && bcrypt.compareSync(password, user.password)) {
+      res.json({
+        success: true,
+        message: "Login successful",
+        response: {
+          email: user.email,
+          id: user._id,
+          accessToken: user.accessToken,
+        },
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+        response: null,
+      });
+    }
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
