@@ -52,7 +52,7 @@ app.get("/", (req, res) => {
 });
 
 // These are the connections to the different routes with endpoints
-app.use("/users", userRoutes);
+app.use("/user", userRoutes);
 app.use("/thoughts", thoughtRoutes);
 // Start the server
 app.listen(port, () => {
