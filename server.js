@@ -51,7 +51,7 @@ app.get("/", (req, res) => {
   }]);
 });
 
-// These are the connections to the different routes with endpoints
+
 app.use("/user", userRoutes);
 app.use("/thoughts", thoughtRoutes);
 // Start the server

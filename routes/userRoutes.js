@@ -81,11 +81,6 @@ router.post("/login", async (req, res) => {
     });
   }
 });
-    // TODO check if user exists
-    // TODO compare password
-    // TODO return success message
-    // TODO handle invalid credentials
-
 
 // export the router to be used in server.js
 export default router;
