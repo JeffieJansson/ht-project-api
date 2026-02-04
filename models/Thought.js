@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const ThoughtSchema = new mongoose.Schema({
+const ThoughtSchema = new Schema({
   message: {
     type: String,
     required: [true, "A Message is required"],
